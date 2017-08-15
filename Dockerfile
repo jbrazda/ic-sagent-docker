@@ -1,37 +1,44 @@
-FROM debian:8.1
-#first time you need to provide host name, name, and agent required creds
-##example run command: docker run -d -h <hostname> --name <agent_name> <image_name:image_tag> <agent_username> <agent_password>
-##ie., docker run -d -h jw2 --name jw2 test:3 jweber@000qio.org jetssuck
-##ie., docker run -d -h jw1 --name jw1 test:3 jweber@informatica.com bp3luser
-#subsequent runs can be done via docker start <container_id>
+FROM ubuntu:16.04
+# Read the README.md for more details on the image configuration
 
 MAINTAINER Jaroslav Brazda <jaroslav.brazda@gmail.com>
 
-# Upgrading system for wget and unzip tools
+#you can override the target installation directory
+ARG INSTALL_DIR=/informatica/agent
+# Defines whre to download agent from (this might be different for your org)
+ARG AGENT_URL=https://app2.informaticacloud.com/saas/download/linux64/installer/agent64_install.bin
+# we need to run docker image under a different user than root because the Secure agent process engine can't be run under root account
+
+
+# install system tools
 RUN apt-get update && \
-	apt-get -y install wget && \
-	apt-get -y install unzip
+	apt-get -y install curl \
+	less \
+	locales \
+	locales-all \
+	sudo \
+	unzip
 
-COPY ./post-build-files /informatica/agent/
+# Set the locale
+RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    locale-gen
+ENV LANG en_US.UTF-8  
+ENV LANGUAGE en_US:en  
+ENV LC_ALL en_US.UTF-8    
 
-#setup
-RUN mkdir "/informatica/agent/installer" && \ 
-	wget --no-check-certificate "https://app2.informaticacloud.com/saas/download/linux64/installer/agent64_install.bin" -O /informatica/agent/installer/agent64_install.bin && \
-	chmod +x /informatica/agent/entrypoint.sh && \
-    chmod +x /informatica/agent/register-agent.sh && \
-	chmod +x /informatica/agent/installer/agent64_install.bin
+RUN useradd --create-home -ms /bin/bash -U agent
+USER agent
+
+#download and prepare Installer
+RUN curl -o /tmp/agent64_install.bin $AGENT_URL && \
+	chmod +x /tmp/agent64_install.bin
 
 #install	
-RUN chmod +x /informatica/agent/run_install.sh &&\
-    /informatica/agent/run_install.sh &&\
-    rm /informatica/agent/infaagent/main/tools/unzip/unzip &&\
-    ln -s /usr/bin/unzip /informatica/agent/infaagent/main/tools/unzip/unzip
-
-#post install	
-RUN update-alternatives --install /usr/bin/java java /informatica/agent/infaagent/jre/bin/java 100 
-	#unzip -o /informatica/work/agent_jars.zip -d /informatica/agent/infaagent
+RUN ( /tmp/agent64_install.bin -i silent || true )
 
 #cleanup	
-RUN rm /informatica/agent/installer/agent64_install.bin
+RUN rm -rf /tmp/agent64_install.bin
 
-ENTRYPOINT ["/informatica/agent/entrypoint.sh", "/informatica/agent/infaagent"]
+WORKDIR /home/agent/infaagent/apps/agentcore
+
+CMD [ "./agent_start.sh" ]
