@@ -7,8 +7,6 @@ MAINTAINER Jaroslav Brazda <jaroslav.brazda@gmail.com>
 ARG INSTALL_DIR=/informatica/agent
 # Defines whre to download agent from (this might be different for your org)
 ARG AGENT_URL=https://app2.informaticacloud.com/saas/download/linux64/installer/agent64_install.bin
-# we need to run docker image under a different user than root because the Secure agent process engine can't be run under root account
-
 
 # install system tools
 RUN apt-get update && \
@@ -26,6 +24,7 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en  
 ENV LC_ALL en_US.UTF-8    
 
+# we need to run docker image under a different user than root because the Secure agent process engine can't be run under root account
 RUN useradd --create-home -ms /bin/bash -U agent
 USER agent
 
