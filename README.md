@@ -15,7 +15,7 @@
 ## Description
 
 This package contains example docker file and supporting scripts to run Informatica CLoud Secure Agent on a Docker Container.
-Note that this is not an official or supported method how to run Informatica Secure Agent. It is useful though to  leearning how to setup secure agent, create agent clusters or test integrations
+Note that this is not an official or supported method how to run Informatica Secure Agent. It is useful though to  learning how to setup secure agent, create agent clusters or test integrations
 Full containerization of Secure agent is non trivial as it requires custom configuration of agent if deem to use this method as your runtime
 
 ## 1. Prepare Org for Agent installation
@@ -24,19 +24,22 @@ Full containerization of Secure agent is non trivial as it requires custom confi
 
 1. Create IICS Native user account which will be used to connect secure agent and assign user to Admin Group
     Follow naming convention that includes company domain and environment such as `sa_login@acme.com.dev`
-2. Login to informatica Cloud to activate the user and retrive the Secure Agent Token on the Administration/Runtime Environments page
-    ![Secure Token](../images/IC_SA_Token.png)
+2. Login to informatica Cloud to activate the user and retrieve the Secure Agent Token on the Administration/Runtime Environments page
+    ![Secure Token](images/IC_SA_Token.png)
 
 ## 2. Build a Docker Image
 
 1. Make sure you have docker installed, go to (https://docs.docker.com/engine/installation/)
 2. Make sure you have a git client installed
 3. Clone repository with contents of this project
+
     ```shell
     git clone git@github.com:jbrazda/ic-sagent-docker.git
     ```
+
 4. Update the [Dockerfile](Dockerfile) if necessary (Location of the SA agent installer might be different for your Informatica CLoud org) You can override the default location by specifying `--build-arg <name>=<value>` in next step
 5. Run command to build a docker Image
+
     ```shell
     docker build -t ic-secure-agent:1.0 .
     ```
