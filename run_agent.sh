@@ -26,7 +26,7 @@ prep_term()
 {
     unset term_child_pid
     trap 'handle_term' TERM INT
-    # kill the last background process, which is `tail -f /dev/null` and execute the specified handler
+    # kill the last background process and execute the specified handler
     trap 'kill ${!}; my_handler' SIGUSR1
     echo 'Termination Handler Ready'
 }
