@@ -3,7 +3,7 @@ FROM ubuntu:18.04
 # You can use different baseline image or linux distribution 
 # but you will likely need to change supporting tools installation and  environment settings
 
-MAINTAINER Jaroslav Brazda <jaroslav.brazda@gmail.com>
+LABEL maintainer="Jaroslav Brazda <jaroslav.brazda@gmail.com>"
 
 # Defines where to download agent from (this might be different for your org)
 # This URL will have following pattern for latest IICS Orgs
