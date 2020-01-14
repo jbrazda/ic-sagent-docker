@@ -15,11 +15,6 @@ ARG AGENT_URL=https://na1.dm-us.informaticacloud.com/saas/download/linux64/insta
 # Agent Core InfaAgent.GroupName=<Secure Agent group name>
 ARG AGENT_GROUP_NAME=NA
 
-# Required User Name to te register agent
-ARG AGENT_USERNAME
-ARG USER_TOKEN
-
-
 # install system tools
 RUN apt-get update && apt-get install -y \
 curl \
@@ -38,8 +33,9 @@ ENV LC_ALL en_US.UTF-8
 
 # We need to run docker image under a different user than root 
 # Secure agent process engine can't be run under root account
-RUN useradd --create-home -ms /bin/bash -U agent
-USER agent
+RUN useradd --create-home -ms /bin/bash -U iics
+
+USER iics
 
 # 1. Download and prepare Installer
 # 2. Set file permissions
@@ -50,23 +46,16 @@ RUN curl -o /tmp/agent64_install.bin $AGENT_URL && \
     chmod +x /tmp/agent64_install.bin && \ 
     /tmp/agent64_install.bin -i silent && \
     rm -rf /tmp/agent64_install.bin && \
-    echo "\nInfaAgent.GroupName=$AGENT_GROUP_NAME" >> /home/agent/infaagent/apps/agentcore/conf/infaagent.ini && \
-    cat /home/agent/infaagent/apps/agentcore/conf/infaagent.ini && \
-    mkdir -p /home/agent/infaagent/apps/process-engine/logs && \
-    mkdir -p /home/agent/infaagent/apps/process-engine/data
+    echo "\nInfaAgent.GroupName=$AGENT_GROUP_NAME" >> /home/iics/infaagent/apps/agentcore/conf/infaagent.ini && \
+    cat /home/iics/infaagent/apps/agentcore/conf/infaagent.ini && \
+    mkdir -p /home/iics/infaagent/apps/process-engine/logs && \
+    mkdir -p /home/iics/infaagent/apps/process-engine/data
 
-WORKDIR /home/agent/infaagent/apps/agentcore
+WORKDIR /home/iics/infaagent/apps/agentcore
 
-# Register Agent
-# RUN ./infaagent startup && \
-#     sleep 20 && \
-#     ./consoleAgentManager.sh isConfigured && \
-#     ./consoleAgentManager.sh configureToken "$AGENT_USERNAME" "$USER_TOKEN" && \
-#     ./consoleAgentManager.sh isConfigured && \
-#     ./infaagent shutdown
 
 ## Define Volumes for Shared Data Staging area 
-VOLUME [ "/data", "/home/agent/infaagent/apps/process-engine/logs", "/home/agent/infaagent/apps/process-engine/data"]
+VOLUME [ "/data", "/home/iics/infaagent/apps/process-engine/logs" , "/home/iics/infaagent/apps/process-engine/data" ]
 
 ## Ports used by the agent that might be used for external Connections
 # 7080 Process Engine Shutdown Port
