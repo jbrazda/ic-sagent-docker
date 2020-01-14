@@ -2,11 +2,12 @@
 
 <!-- MarkdownTOC -->
 
-- [Description](#description)
-- [1. Prepare Org for Agent installation](#1-prepare-org-for-agent-installation)
+- [Run Informatica Agent in Docker Container](#run-informatica-agent-in-docker-container)
+  - [Description](#description)
+  - [1. Prepare Org for Agent installation](#1-prepare-org-for-agent-installation)
     - [1.1 Create User](#11-create-user)
-- [2. Build a Docker Image](#2-build-a-docker-image)
-- [3. Create and run a Container using your Docker Image](#3-create-and-run-a-container-using-your-docker-image)
+  - [2. Build a Docker Image](#2-build-a-docker-image)
+  - [3. Create and run a Container using your Docker Image](#3-create-and-run-a-container-using-your-docker-image)
     - [. Connect and Initialize Agent](#-connect-and-initialize-agent)
 
 <!-- /MarkdownTOC -->
@@ -40,7 +41,7 @@ Full containerization of Secure agent is non trivial as it requires custom confi
     docker build -t ic-secure-agent:1.0 .
     ```
 
-    The Agent installation location will be dependend on specific Informatica Pod where your org is provisioned
+    The Agent installation location will be dependent on a specific Informatica Pod where your org is provisioned
     To override the download file location use AGENT_URL argument. typical format for download url is
     `https://<pod>.<region>.informaticacloud.com/saas/download/linux64/installer/agent64_install_ng_ext.bin`
 
@@ -57,6 +58,11 @@ docker run -d -h agent1 --name ic-agent1 ic-secure-agent:1.0
 ```
 
 If you want to make certain ports available on your host like ability to call Secure agent processes  or access oProcess engine Database from your host machine map the available exposed ports using th -p option of the docker run command
+
+```shell
+docker run -d -h agent1 --name ic-agent1 -p 7080:7080 -p 7443:7443 ic-secure-agent:1.0
+```
+
 Stop the container using a `docker stop <container_name` i.e. docker stop
 
 ### . Connect and Initialize Agent
@@ -86,4 +92,3 @@ You can monitor agent logs running by
 ```shell
 docker exec -it ic-agent1 less agentCore.log
 ```
-
