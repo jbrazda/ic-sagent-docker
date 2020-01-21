@@ -8,6 +8,8 @@
     - [1.1 Create User](#11-create-user)
   - [2. Build a Docker Image](#2-build-a-docker-image)
   - [3. Create and run a Container using your Docker Image](#3-create-and-run-a-container-using-your-docker-image)
+    - [3.1 Ports Exposed by Image](#31-ports-exposed-by-image)
+    - [3.2 Image Volumes](#32-image-volumes)
     - [. Connect and Initialize Agent](#-connect-and-initialize-agent)
 
 <!-- /MarkdownTOC -->
@@ -65,6 +67,39 @@ If you want to make certain ports available on your host like ability to call Se
 ```shell
 docker run -d -h agent1 --name ic-agent1 -p 7080:7080 -p 7443:7443 ic-secure-agent:1.0
 ```
+
+or
+
+```shell
+docker run -d -h agent1 --name ic-agent1 \
+    -p 7080:7080 \
+    -p 7443:7443 \
+    -p 5432:5432 \
+    ic-secure-agent:1.0
+```
+
+### 3.1 Ports Exposed by Image
+
+| Port | Description                |
+|------|----------------------------|
+| 7080 | Process Engine http port   |
+| 7443 | Process Engine https port  |
+| 5432 | Process Engine Postgres DB |
+
+### 3.2 Image Volumes
+
+Process engine uses several directories to write logs or store it's data or provide external Extension files or configurations. It is desired to make these directories available on host machine and persisted outside the Container in Docker Volume
+
+Volumes are defined as follows
+
+| Volume                                                   | Description                                                                                                 |
+|----------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
+| `/home/iics/infaagent/apps/process-engine/logs`          | Directory with Process Engine Logs                                                                          |
+| `/home/iics/infaagent/apps/process-engine/data`          | Directory Containing Process Engine Database And Backups                                                    |
+| `/home/iics/infaagent/apps/Data_Integration_Server/data` | Directory Containing Integration Service Data                                                               |
+| `/home/iics/infaagent/apps/Data_Integration_Server/logs` | Directory Containing Integration Service Logs                                                               |
+| `/home/iics/infaagent/apps/process-engine/ext`           | Process Engine Extensions, External Libraries, JDBC drivers. etc jars in this dir are added to PE classpath |
+| `/home/iics/infaagent/apps/Data_Integration_Server/ext`  | Process Engine Extensions, External Libraries, JDBC drivers                                                 |
 
 Stop the container using a `docker stop <container_name` i.e. docker stop
 
